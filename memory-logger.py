@@ -31,6 +31,6 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--interval', type=int, default=10)
+    parser.add_argument('-i', '--interval', type=int, default=10, help="Pause interval (seconds) between process scans. (Default: 60)")
     args = parser.parse_args()
     main(args)
