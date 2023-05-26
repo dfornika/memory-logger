@@ -12,17 +12,18 @@ import time
 def main(args):
     output_fieldnames = [
         "timestamp",
+        "process_id",
         "process_name",
         "username",
         "timestamp_process_created",
         "cpu_percent",
-        "mem_rss",
-        "mem_vms",
-        "mem_shared",
-        "mem_text",
-        "mem_lib",
-        "mem_data",
-        "mem_dirty",
+        "mem_rss_mb",
+        "mem_vms_mb",
+        "mem_shared_mb",
+        "mem_text_mb",
+        "mem_lib_mb",
+        "mem_data_mb",
+        "mem_dirty_mb",
     ]
 
     writer = csv.DictWriter(sys.stdout, fieldnames=output_fieldnames, dialect='unix', quoting=csv.QUOTE_MINIMAL)
@@ -32,6 +33,7 @@ def main(args):
     while True:
         for proc in psutil.process_iter():
             now = datetime.datetime.now().isoformat()
+            process_id = proc.pid
             process_name = proc.name()
             process_username = proc.username()
             process_cpu_percent = proc.cpu_percent()
@@ -39,6 +41,7 @@ def main(args):
             process_memory_info = psutil.Process(proc.pid).memory_info()._asdict()
             output = {
                 "timestamp": now,
+                "process_id": process_id,
                 "process_name": process_name,
                 "username": process_username,
                 "timestamp_process_created": str(process_create_time),
@@ -48,7 +51,7 @@ def main(args):
 
             if args.csv:
                 for k, v in output['memory_info'].items():
-                    output['mem_' + k] = v
+                    output['mem_' + k + '_mb'] = int(v) / (1024 * 1024) 
                 output.pop('memory_info')
                 writer.writerow(output)
             else:
